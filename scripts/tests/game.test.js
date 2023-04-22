@@ -3,7 +3,7 @@
  */
 
 const { expect } = require("@jest/globals");
-const { game, newGame, showScore, addTurn, lightsOn } = require("../game");
+const { game, newGame, showScore, addTurn, lightsOn, showTurns } = require("../game");
 
 beforeAll(() => {
     let fs = require("fs");
@@ -26,6 +26,9 @@ describe("game object contains correct keys", () => {
     test("choices key exists", () => {
         expect("choices" in game).toBe(true);
     });
+    test("turnNumber key exists", () => {
+        expect("turnNumber" in game).toBe(true);
+    })
     test("choices contains correct ids", () => {
         expect(game.choices).toEqual(["button1", "button2", "button3", "button4"]);
     });
@@ -37,6 +40,7 @@ describe("newGame works correctly", () => {
         game.playerMoves = ["button3", "button1", "button1"];
         game.currentGame = ["button3", "button1", "button1"];
         document.getElementById("score").innerText = "42";
+        game.turnNumber = 42;
         newGame();
     });
     test("should set game score to zero", () => {
@@ -50,7 +54,16 @@ describe("newGame works correctly", () => {
     });
     test("should display 0 for the element with the id of score", () => {
         expect(document.getElementById("score").innerText).toEqual(0);
-    })
+    });
+    test("should set turnNumber to zero", () => {
+        expect(game.turnNumber).toBe(0);
+    });
+    test("expect data-listener to be true", () => {
+        const elements = document.getElementsByClassName("circle");
+        for (let element of elements) {
+            expect(element.getAttribute("data-listener")).toEqual("true");
+        };
+    });
 });
 
 describe("gameplay works correctly", () => {
@@ -73,5 +86,10 @@ describe("gameplay works correctly", () => {
         let button = document.getElementById(game.currentGame[0]);
         lightsOn(game.currentGame[0]);
         expect(button.classList).toContain("light");
+    });
+    test("showTurns should update game.turnNumber", () => {
+        game.turnNumber = 42;
+        showTurns();
+        expect(game.turnNumber).toBe(0);
     });
 });
